@@ -87,7 +87,7 @@ void addSine(std::vector<float> &a, float frequency, float amp, int duration) {
 
 
 
-void addSineSweep(std::vector<float> &a, float fromFreq, float toFreq, float amp, int duration) {
+void addLinSineSweep(std::vector<float> &a, float fromFreq, float toFreq, float amp, int duration) {
 	double phase = 0;
 	
 	for(int i = 0; i < duration; i++) {
@@ -99,16 +99,18 @@ void addSineSweep(std::vector<float> &a, float fromFreq, float toFreq, float amp
 	}
 }
 
-void addLogSweep(std::vector<float> &a, float fromFreq, float toFreq, float amp, int duration) {
+void addLogSineSweep(std::vector<float> &a, float fromFreq, float toFreq, float amp, int duration) {
 	double phase = 0;
 	
 	for(int i = 0; i < duration; i++) {
-		float amt = i / (float) duration;
 
-		float frequency = fromFreq + (toFreq - fromFreq) * amt;
-		double phaseInc = M_PI * 2.0 * frequency / (double) SAMPLE_RATE;
-		a.push_back(sin(phase) * amp);
-		phase += phaseInc;
+
+		float beta = duration / log(toFreq / fromFreq);
+
+		phase = 2.0 * M_PI * beta * fromFreq * (pow(toFreq / fromFreq, i/(double)duration) - 1);
+
+		a.push_back(sin((phase + M_PI/180.0)/(double)SAMPLE_RATE) * amp);
+
 	}
 }
 
@@ -169,7 +171,7 @@ int main() {
 	
 	addSilence(out, 10000);
 	for(float v = 0.1; v <=1; v += 0.1) {
-		addSineSweep(out, 50, 20000, v, SAMPLE_RATE * 16);
+		addLogSineSweep(out, 50, 20000, v, SAMPLE_RATE * 4);
 	}
 
 
