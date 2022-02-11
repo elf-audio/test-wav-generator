@@ -133,30 +133,90 @@ void addNoise(std::vector<float> &a, float volume, int duration) {
 }
 
 
+void mixSine(std::vector<float> &a, float frequency, float amp) {
+	double phase = 0;
+	double phaseInc = M_PI * 2.0 * frequency / (double) SAMPLE_RATE;
+	for(int i = 0; i < a.size(); i++) {
+		a[i] += (sin(phase) * amp);
+		phase += phaseInc;
+	}
+}
+
+
+
+void addSquare(std::vector<float> &a, float frequency, float amp, int duration) {
+
+
+
+	std::vector<float> s;
+	s.resize(duration, 0);
+
+	int harm = 1;
+	for(float f = frequency; f < SAMPLE_RATE / 2.2f; harm+=2) {
+		f = frequency * harm;
+		mixSine(s, f, amp/(float)harm);
+	}
+
+	a.insert(a.end(), s.begin(), s.end());
+}
+
+
+
 int main() {
 	std::vector<float> out;
+
+
+
+	addSine(out, 440, 1, 882000);
+	
 	addSilence(out, 50000);
+	for(int i = 80; i < 20000; i *= sqrt(2)) {
+		addSine(out, i, 0.125, 20000);	
+		addSilence(out, 5000);
+	}
+	addSilence(out, 10000);
+	for(int i = 80; i < 20000; i *= sqrt(2)) {
+		addSine(out, i, 0.25, 20000);	
+		addSilence(out, 5000);
+	}
+	addSilence(out, 10000);
+	for(int i = 80; i < 20000; i *= sqrt(2)) {
+		addSine(out, i, 0.5, 20000);	
+		addSilence(out, 5000);
+	}
+	addSilence(out, 10000);
+	for(int i = 80; i < 20000; i *= sqrt(2)) {
+		addSine(out, i, 0.75, 20000);	
+		addSilence(out, 5000);
+	}
 
 
-	for(int i = 80; i < 20000; i *= sqrt(2)) {
-		addSine(out, i, 0.125, 30000);	
+
+
+
+
+
+
+	for(int i = 80; i < 10000; i *= sqrt(2)) {
+		addSquare(out, i, 0.125, 20000);	
 		addSilence(out, 5000);
 	}
 	addSilence(out, 10000);
-	for(int i = 80; i < 20000; i *= sqrt(2)) {
-		addSine(out, i, 0.25, 30000);	
+	for(int i = 80; i < 10000; i *= sqrt(2)) {
+		addSquare(out, i, 0.25, 20000);	
 		addSilence(out, 5000);
 	}
 	addSilence(out, 10000);
-	for(int i = 80; i < 20000; i *= sqrt(2)) {
-		addSine(out, i, 0.5, 30000);	
+	for(int i = 80; i < 10000; i *= sqrt(2)) {
+		addSquare(out, i, 0.5, 20000);	
 		addSilence(out, 5000);
 	}
 	addSilence(out, 10000);
-	for(int i = 80; i < 20000; i *= sqrt(2)) {
-		addSine(out, i, 0.75, 30000);	
+	for(int i = 80; i < 10000; i *= sqrt(2)) {
+		addSquare(out, i, 0.75, 20000);	
 		addSilence(out, 5000);
 	}
+
 	
 
 	addSilence(out, 20000);
